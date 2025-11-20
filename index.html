@@ -13,31 +13,14 @@
   </video>
 </body>
 </html> -->
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Titova Pecina</title>
-  <style>
-    #progress-container {
-      width: 640px;
-      height: 20px;
-      background-color: #ddd;
-      margin: 10px 0;
-      border-radius: 5px;
-      overflow: hidden;
-    }
-    #progress-bar {
-      height: 100%;
-      width: 0;
-      background-color: #4caf50;
-      transition: width 0.2s;
-    }
-    #status {
-      font-family: sans-serif;
-    }
-  </style>
 </head>
 <body>
   <h1>Titova Pecina</h1>
@@ -47,43 +30,20 @@
     Your browser does not support the video tag.
   </video>
 
-  <div id="progress-container">
-    <div id="progress-bar"></div>
-  </div>
-  <div id="status">Učitavanje videa...</div>
-
   <script>
     const video = document.getElementById('myVideo');
-    const progressBar = document.getElementById('progress-bar');
-    const status = document.getElementById('status');
+    video.pause(); // Pauziraj odmah
 
-    // Pauziraj odmah da ne krene automatski
-    video.pause();
-
-    // Event kada se buffer promijeni
-    video.addEventListener('progress', () => {
-      if (video.buffered.length > 0) {
+    // Čekaj dok se buffer učita barem 5 sekundi
+    const interval = setInterval(() => {
+      if(video.buffered.length > 0){
         const bufferedEnd = video.buffered.end(video.buffered.length - 1);
-        const duration = video.duration || 1;
-        const percent = (bufferedEnd / duration) * 100;
-        progressBar.style.width = percent + '%';
+        if(bufferedEnd >= 5){ // 5 sekundi buffer
+          clearInterval(interval);
+          video.play();
+        }
       }
-    });
-
-    // Kad je dovoljno učitano da se može normalno pustiti
-    video.addEventListener('canplay', () => {
-      status.textContent = 'Video spreman za reprodukciju!';
-      video.play();
-    });
-
-    // Opcionalno: update status tokom učitavanja
-    video.addEventListener('waiting', () => {
-      status.textContent = 'Buffering...';
-    });
-
-    video.addEventListener('playing', () => {
-      status.textContent = 'Video se reproducira!';
-    });
+    }, 300);
   </script>
 </body>
 </html>
