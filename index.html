@@ -19,14 +19,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Titova Pecina</title>
+<title>Titova Pecina – “Live” Playback</title>
 <style>
-  #status { font-family: sans-serif; margin-top: 5px; }
+  body { font-family: sans-serif; text-align: center; margin-top: 30px; }
+  #status { margin-top: 10px; }
 </style>
 </head>
 <body>
 <h1>Titova Pecina</h1>
 
+<!-- Tvoj originalni video tag -->
 <video id="myVideo" width="640" height="360" controls preload="auto">
   <source src="https://od.lk/s/NzhfNzA3MTk1MTdf/titovapecina_g4I48I6W%20%28online-video-cutter.com%29.mp4" type="video/mp4">
   Your browser does not support the video tag.
@@ -35,46 +37,34 @@
 <div id="status">Učitavanje videa...</div>
 
 <script>
-const video = document.getElementById('myVideo');
-const status = document.getElementById('status');
+const video = document.getElementById("myVideo");
+const status = document.getElementById("status");
+const MIN_BUFFER = 10; // koliko sekundi buffera želimo
 
-video.pause(); // pauziraj odmah
+// funkcija koja stalno provjerava buffer
+function checkBuffer() {
+    const buffered = video.buffered;
+    const current = video.currentTime;
 
-// Čekaj da se buffer učita barem 5 sekundi prije prvog play-a
-const initialBuffer = setInterval(() => {
-  if(video.buffered.length > 0){
-    const bufferedEnd = video.buffered.end(video.buffered.length - 1);
-    if(bufferedEnd >= 5){ // 5 sekundi buffer
-      clearInterval(initialBuffer);
-      video.play();
-    }
-  }
-}, 300);
+    if (buffered.length > 0) {
+        const bufferEnd = buffered.end(0);
 
-// Stalna provjera buffer-a tokom playback-a
-video.addEventListener('timeupdate', () => {
-  if(video.buffered.length > 0){
-    const bufferedEnd = video.buffered.end(video.buffered.length - 1);
-    const currentTime = video.currentTime;
-    // Ako buffer skoro prazan, pauziraj
-    if(bufferedEnd - currentTime < 2){
-      video.pause();
-      status.textContent = 'Buffering...';
-      const waitBuffer = setInterval(() => {
-        const newBufferedEnd = video.buffered.end(video.buffered.length - 1);
-        if(newBufferedEnd - video.currentTime >= 5){
-          clearInterval(waitBuffer);
-          video.play();
-          status.textContent = 'Video se reproducira';
+        if (bufferEnd - current < MIN_BUFFER) {
+            video.pause();
+            status.textContent = "Buffering..."; // korisniku pokaži da učitava
+        } else {
+            if (video.paused) video.play();
+            status.textContent = "Video se reproducira";
         }
-      }, 500);
     }
-  }
-});
+    requestAnimationFrame(checkBuffer);
+}
 
-// Update status kada video krene igrati
-video.addEventListener('playing', () => {
-  status.textContent = 'Video se reproducira';
+// kad se video učita, startaj buffer provjeru
+video.addEventListener("loadedmetadata", () => {
+    video.pause();
+    setTimeout(() => video.play(), 500); // mali delay da se buffer počne puniti
+    checkBuffer();
 });
 </script>
 
