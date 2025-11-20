@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -12,61 +12,5 @@
     Your browser does not support the video tag.
   </video>
 </body>
-</html> -->
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Titova Pecina – “Live” Playback</title>
-<style>
-  body { font-family: sans-serif; text-align: center; margin-top: 30px; }
-  #status { margin-top: 10px; }
-</style>
-</head>
-<body>
-<h1>Titova Pecina</h1>
-
-<!-- Tvoj originalni video tag -->
-<video id="myVideo" width="640" height="360" controls preload="auto">
-  <source src="https://od.lk/s/NzhfNzA3MTk1MTdf/titovapecina_g4I48I6W%20%28online-video-cutter.com%29.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
-
-<div id="status">Učitavanje videa...</div>
-
-<script>
-const video = document.getElementById("myVideo");
-const status = document.getElementById("status");
-const MIN_BUFFER = 10; // koliko sekundi buffera želimo
-
-// funkcija koja stalno provjerava buffer
-function checkBuffer() {
-    const buffered = video.buffered;
-    const current = video.currentTime;
-
-    if (buffered.length > 0) {
-        const bufferEnd = buffered.end(0);
-
-        if (bufferEnd - current < MIN_BUFFER) {
-            video.pause();
-            status.textContent = "Buffering..."; // korisniku pokaži da učitava
-        } else {
-            if (video.paused) video.play();
-            status.textContent = "Video se reproducira";
-        }
-    }
-    requestAnimationFrame(checkBuffer);
-}
-
-// kad se video učita, startaj buffer provjeru
-video.addEventListener("loadedmetadata", () => {
-    video.pause();
-    setTimeout(() => video.play(), 500); // mali delay da se buffer počne puniti
-    checkBuffer();
-});
-</script>
-
-</body>
 </html>
+
