@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -11,5 +11,79 @@
     <source src="https://od.lk/s/NzhfNzA3MTk1MTdf/titovapecina_g4I48I6W%20%28online-video-cutter.com%29.mp4" type="video/mp4" />
     Your browser does not support the video tag.
   </video>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Titova Pecina</title>
+  <style>
+    #progress-container {
+      width: 640px;
+      height: 20px;
+      background-color: #ddd;
+      margin: 10px 0;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    #progress-bar {
+      height: 100%;
+      width: 0;
+      background-color: #4caf50;
+      transition: width 0.2s;
+    }
+    #status {
+      font-family: sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <h1>Titova Pecina</h1>
+
+  <video id="myVideo" width="640" height="360" controls preload="auto">
+    <source src="https://od.lk/s/NzhfNzA3MTk1MTdf/titovapecina_g4I48I6W%20%28online-video-cutter.com%29.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <div id="progress-container">
+    <div id="progress-bar"></div>
+  </div>
+  <div id="status">Učitavanje videa...</div>
+
+  <script>
+    const video = document.getElementById('myVideo');
+    const progressBar = document.getElementById('progress-bar');
+    const status = document.getElementById('status');
+
+    // Pauziraj odmah da ne krene automatski
+    video.pause();
+
+    // Event kada se buffer promijeni
+    video.addEventListener('progress', () => {
+      if (video.buffered.length > 0) {
+        const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+        const duration = video.duration || 1;
+        const percent = (bufferedEnd / duration) * 100;
+        progressBar.style.width = percent + '%';
+      }
+    });
+
+    // Kad je dovoljno učitano da se može normalno pustiti
+    video.addEventListener('canplay', () => {
+      status.textContent = 'Video spreman za reprodukciju!';
+      video.play();
+    });
+
+    // Opcionalno: update status tokom učitavanja
+    video.addEventListener('waiting', () => {
+      status.textContent = 'Buffering...';
+    });
+
+    video.addEventListener('playing', () => {
+      status.textContent = 'Video se reproducira!';
+    });
+  </script>
 </body>
 </html>
