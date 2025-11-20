@@ -14,36 +14,69 @@
 </body>
 </html> -->
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Titova Pecina</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Titova Pecina</title>
+<style>
+  #status { font-family: sans-serif; margin-top: 5px; }
+</style>
 </head>
 <body>
-  <h1>Titova Pecina</h1>
+<h1>Titova Pecina</h1>
 
-  <video id="myVideo" width="640" height="360" controls preload="auto">
-    <source src="https://od.lk/s/NzhfNzA3MTk1MTdf/titovapecina_g4I48I6W%20%28online-video-cutter.com%29.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
+<video id="myVideo" width="640" height="360" controls preload="auto">
+  <source src="https://od.lk/s/NzhfNzA3MTk1MTdf/titovapecina_g4I48I6W%20%28online-video-cutter.com%29.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
-  <script>
-    const video = document.getElementById('myVideo');
-    video.pause(); // Pauziraj odmah
+<div id="status">Učitavanje videa...</div>
 
-    // Čekaj dok se buffer učita barem 5 sekundi
-    const interval = setInterval(() => {
-      if(video.buffered.length > 0){
-        const bufferedEnd = video.buffered.end(video.buffered.length - 1);
-        if(bufferedEnd >= 5){ // 5 sekundi buffer
-          clearInterval(interval);
+<script>
+const video = document.getElementById('myVideo');
+const status = document.getElementById('status');
+
+video.pause(); // pauziraj odmah
+
+// Čekaj da se buffer učita barem 5 sekundi prije prvog play-a
+const initialBuffer = setInterval(() => {
+  if(video.buffered.length > 0){
+    const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+    if(bufferedEnd >= 5){ // 5 sekundi buffer
+      clearInterval(initialBuffer);
+      video.play();
+    }
+  }
+}, 300);
+
+// Stalna provjera buffer-a tokom playback-a
+video.addEventListener('timeupdate', () => {
+  if(video.buffered.length > 0){
+    const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+    const currentTime = video.currentTime;
+    // Ako buffer skoro prazan, pauziraj
+    if(bufferedEnd - currentTime < 2){
+      video.pause();
+      status.textContent = 'Buffering...';
+      const waitBuffer = setInterval(() => {
+        const newBufferedEnd = video.buffered.end(video.buffered.length - 1);
+        if(newBufferedEnd - video.currentTime >= 5){
+          clearInterval(waitBuffer);
           video.play();
+          status.textContent = 'Video se reproducira';
         }
-      }
-    }, 300);
-  </script>
+      }, 500);
+    }
+  }
+});
+
+// Update status kada video krene igrati
+video.addEventListener('playing', () => {
+  status.textContent = 'Video se reproducira';
+});
+</script>
+
 </body>
 </html>
